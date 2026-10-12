@@ -1,0 +1,25 @@
+# Python / OS
+.venv*/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Camera frames and run outputs (large, regenerable)
+*.jpg
+tmp_runs/
+
+# Printer runtime state: last commanded position, rewritten on every move
+calibration/position.json
+
+# Slicer outputs (re-slice from the .3mf)
+*.gcode
+*.gcode.3mf
+/result.json
+
+# Background research, not part of the device tooling
+Agent_Harness_spec.md
+Scientific_Agent_Harness_*.md
+reports/
+research_notes/
+exa-results/
+*.pdf
