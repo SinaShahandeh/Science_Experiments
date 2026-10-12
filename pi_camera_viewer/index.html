@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pi Camera Live</title>
+<style>
+  :root { --bg: #111; --fg: #eee; --muted: #888; --ok: #3c3; --bad: #e44; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px system-ui, sans-serif;
+         display: flex; flex-direction: column; height: 100vh; }
+  header { display: flex; gap: 8px; align-items: center; padding: 8px 16px; flex-wrap: wrap; }
+  header h1 { font-size: 16px; margin: 0 12px 0 0; }
+  button { background: #333; color: var(--fg); border: 1px solid #555; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+  button:hover { background: #444; }
+  #info { color: var(--muted); }
+  #status { margin-left: auto; color: var(--muted); }
+  #status::before { content: "●"; margin-right: 6px; color: var(--muted); }
+  #status.live::before { color: var(--ok); }
+  #status.error::before { color: var(--bad); }
+  main { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 0 16px 16px; }
+  #feed { max-width: 100%; max-height: 100%; object-fit: contain; background: #000; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pi Camera</h1>
+  <button id="reconnect">Reconnect</button>
+  <button id="fullscreen">Fullscreen</button>
+  <span id="info"></span>
+  <span id="status">Connecting…</span>
+</header>
+<main>
+  <img id="feed" alt="Live Raspberry Pi camera feed">
+</main>
+<script>
+  // Served by serve.py, which relays the Pi's stream from this same origin.
+  const feed = document.getElementById('feed');
+  const status = document.getElementById('status');
+  const info = document.getElementById('info');
+  let retryTimer = null;
+
+  function setStatus(text, cls) {
+    status.textContent = text;
+    status.className = cls || '';
+  }
+
+  function connect() {
+    clearTimeout(retryTimer);
+    setStatus('Connecting…');
+    // Cache-buster forces a fresh stream connection on reconnect.
+    feed.src = 'stream.mjpg?t=' + Date.now();
+  }
+
+  feed.addEventListener('load', () => setStatus('Live', 'live'));
+  feed.addEventListener('error', () => {
+    setStatus('Stream unavailable — retrying in 3 s', 'error');
+    retryTimer = setTimeout(connect, 3000);
+  });
+
+  async function loadInfo() {
+    try {
+      const v = (await (await fetch('status.json')).json()).video;
+      info.textContent = `${v.width}×${v.height} @ ${v.stream_fps} fps`;
+    } catch { info.textContent = ''; }
+  }
+
+  document.getElementById('reconnect').onclick = connect;
+  document.getElementById('fullscreen').onclick = () => feed.requestFullscreen?.();
+
+  connect();
+  loadInfo();
+</script>
+</body>
+</html>
