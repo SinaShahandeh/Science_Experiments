@@ -1,0 +1,110 @@
+P4-B1: nominal bed (np.float64(70.0), np.float64(70.0)), nozzle guess (np.float64(67.78), np.float64(103.42))
+  P4-B1 it0: nozzle (67.78,103.42) err px (-4.6,+0.4)
+  P4-B1 it1: nozzle (66.83,103.33) err px (+1.0,-0.1)
+  P4-B1 it2: nozzle (67.03,103.34) err px (+0.0,-0.0)
+  -> P4-B1 at X67.03 Y103.34
+P4-B2: nominal bed (np.float64(82.0), np.float64(70.0)), nozzle guess (np.float64(79.03), np.float64(103.34))
+  P4-B2 it0: nozzle (79.03,103.34) err px (-0.4,-0.1)
+  -> P4-B2 at X79.03 Y103.34
+P4-A2: nominal bed (np.float64(82.0), np.float64(82.0)), nozzle guess (np.float64(79.03), np.float64(115.34))
+  P4-A2 it0: nozzle (79.03,115.34) err px (-0.5,-0.1)
+  -> P4-A2 at X79.03 Y115.34
+P4-A1: nominal bed (np.float64(70.0), np.float64(82.0)), nozzle guess (np.float64(67.03), np.float64(115.34))
+  P4-A1 it0: nozzle (67.03,115.34) err px (-0.5,-0.1)
+  -> P4-A1 at X67.03 Y115.34
+C-D1: nominal bed (np.float64(110.0), np.float64(110.0)), nozzle guess (np.float64(107.78), np.float64(143.42))
+  C-D1 it0: nozzle (107.78,143.42) err px (-3.5,+1.9)
+  C-D1 it1: nozzle (107.06,143.03) err px (+0.5,-0.0)
+  -> C-D1 at X107.06 Y143.03
+C-D2: nominal bed (np.float64(122.0), np.float64(110.0)), nozzle guess (np.float64(119.06), np.float64(143.03))
+  C-D2 it0: nozzle (119.06,143.03) err px (+0.5,-0.0)
+  -> C-D2 at X119.06 Y143.03
+C-D3: nominal bed (np.float64(134.0), np.float64(110.0)), nozzle guess (np.float64(131.06), np.float64(143.03))
+  C-D3 it0: nozzle (131.06,143.03) err px (+0.5,+0.4)
+  -> C-D3 at X131.06 Y143.03
+C-D4: nominal bed (np.float64(146.0), np.float64(110.0)), nozzle guess (np.float64(143.06), np.float64(143.03))
+  C-D4 it0: nozzle (143.06,143.03) err px (+0.5,+0.4)
+  -> C-D4 at X143.06 Y143.03
+C-C4: nominal bed (np.float64(146.0), np.float64(122.0)), nozzle guess (np.float64(143.06), np.float64(155.03))
+  C-C4 it0: nozzle (143.06,155.03) err px (+0.6,+0.3)
+  -> C-C4 at X143.06 Y155.03
+C-C3: nominal bed (np.float64(134.0), np.float64(122.0)), nozzle guess (np.float64(131.06), np.float64(155.03))
+  C-C3 it0: nozzle (131.06,155.03) err px (+0.6,-0.1)
+  -> C-C3 at X131.06 Y155.03
+C-C2: nominal bed (np.float64(122.0), np.float64(122.0)), nozzle guess (np.float64(119.06), np.float64(155.03))
+  C-C2 it0: nozzle (119.06,155.03) err px (+0.5,+0.4)
+  -> C-C2 at X119.06 Y155.03
+C-C1: nominal bed (np.float64(110.0), np.float64(122.0)), nozzle guess (np.float64(107.06), np.float64(155.03))
+  C-C1 it0: nozzle (107.06,155.03) err px (+0.5,+0.4)
+  -> C-C1 at X107.06 Y155.03
+C-B1: nominal bed (np.float64(110.0), np.float64(134.0)), nozzle guess (np.float64(107.06), np.float64(167.03))
+  C-B1 it0: nozzle (107.06,167.03) err px (+0.5,+0.9)
+  C-B1 it1: nozzle (107.16,166.85) err px (+0.4,-0.1)
+  -> C-B1 at X107.16 Y166.85
+C-B2: nominal bed (np.float64(122.0), np.float64(134.0)), nozzle guess (np.float64(119.16), np.float64(166.85))
+  C-B2 it0: nozzle (119.16,166.85) err px (-0.0,-0.2)
+  -> C-B2 at X119.16 Y166.85
+C-B3: nominal bed (np.float64(134.0), np.float64(134.0)), nozzle guess (np.float64(131.16), np.float64(166.85))
+  C-B3 it0: nozzle (131.16,166.85) err px (-0.5,-0.2)
+  -> C-B3 at X131.16 Y166.85
+C-B4: nominal bed (np.float64(146.0), np.float64(134.0)), nozzle guess (np.float64(143.16), np.float64(166.85))
+  C-B4 it0: nozzle (143.16,166.85) err px (-0.4,-0.1)
+  -> C-B4 at X143.16 Y166.85
+C-A4: nominal bed (np.float64(146.0), np.float64(146.0)), nozzle guess (np.float64(143.16), np.float64(178.85))
+  C-A4 it0: nozzle (143.16,178.85) err px (-0.5,-0.1)
+  -> C-A4 at X143.16 Y178.85
+C-A3: nominal bed (np.float64(134.0), np.float64(146.0)), nozzle guess (np.float64(131.16), np.float64(178.85))
+  C-A3 it0: nozzle (131.16,178.85) err px (-0.4,-0.1)
+  -> C-A3 at X131.16 Y178.85
+C-A2: nominal bed (np.float64(122.0), np.float64(146.0)), nozzle guess (np.float64(119.16), np.float64(178.85))
+  C-A2 it0: nozzle (119.16,178.85) err px (-0.5,-0.1)
+  -> C-A2 at X119.16 Y178.85
+C-A1: nominal bed (np.float64(110.0), np.float64(146.0)), nozzle guess (np.float64(107.16), np.float64(178.85))
+  C-A1 it0: nozzle (107.16,178.85) err px (-0.0,-0.1)
+  -> C-A1 at X107.16 Y178.85
+P3-B1: nominal bed (np.float64(174.0), np.float64(70.0)), nozzle guess (np.float64(171.78), np.float64(103.42))
+  P3-B1 it0: nozzle (171.78,103.42) err px (+11.5,+11.5)
+  P3-B1 it1: nozzle (174.19,101.10) err px (-1.5,-2.0)
+  P3-B1 it2: nozzle (173.88,101.51) err px (-0.5,+0.9)
+  P3-B1 it3: nozzle (173.78,101.32) err px (+0.5,-0.1)
+  -> P3-B1 at X173.78 Y101.32
+P3-B2: nominal bed (np.float64(186.0), np.float64(70.0)), nozzle guess (np.float64(185.78), np.float64(101.32))
+  P3-B2 it0: nozzle (185.78,101.32) err px (+0.1,-0.6)
+  -> P3-B2 at X185.78 Y101.32
+P3-A2: nominal bed (np.float64(186.0), np.float64(82.0)), nozzle guess (np.float64(185.78), np.float64(113.32))
+  P3-A2 it0: nozzle (185.78,113.32) err px (+0.5,-0.1)
+  -> P3-A2 at X185.78 Y113.32
+P3-A1: nominal bed (np.float64(174.0), np.float64(82.0)), nozzle guess (np.float64(173.78), np.float64(113.32))
+  P3-A1 it0: nozzle (173.78,113.32) err px (-0.1,-0.0)
+  -> P3-A1 at X173.78 Y113.32
+P2-B1: nominal bed (np.float64(174.0), np.float64(174.0)), nozzle guess (np.float64(171.78), np.float64(207.42))
+  P2-B1 it0: nozzle (171.78,207.42) err px (-12.0,-17.1)
+  P2-B1 it1: nozzle (169.26,210.88) err px (+2.5,+2.9)
+  P2-B1 it2: nozzle (169.79,210.29) err px (-0.5,-0.6)
+  -> P2-B1 at X169.79 Y210.29
+P2-B2: nominal bed (np.float64(186.0), np.float64(174.0)), nozzle guess (np.float64(181.79), np.float64(210.29))
+  P2-B2 it0: nozzle (181.79,210.29) err px (-0.5,-1.6)
+  P2-B2 it1: nozzle (181.69,210.61) err px (+0.0,-0.1)
+  -> P2-B2 at X181.69 Y210.61
+P2-A2: nominal bed (np.float64(186.0), np.float64(186.0)), nozzle guess (np.float64(181.69), np.float64(222.61))
+  P2-A2 it0: nozzle (181.69,222.61) err px (-1.4,+0.4)
+  P2-A2 it1: nozzle (181.40,222.52) err px (-0.0,-0.1)
+  -> P2-A2 at X181.40 Y222.52
+P2-A1: nominal bed (np.float64(174.0), np.float64(186.0)), nozzle guess (np.float64(169.4), np.float64(222.52))
+  P2-A1 it0: nozzle (169.40,222.52) err px (-0.0,+0.9)
+  P2-A1 it1: nozzle (169.40,222.33) err px (+0.5,-0.1)
+  -> P2-A1 at X169.40 Y222.33
+P1-B2: nominal bed (np.float64(82.0), np.float64(174.0)), nozzle guess (np.float64(79.78), np.float64(207.42))
+  P1-B2 it0: nozzle (79.78,207.42) err px (+11.5,-8.6)
+  P1-B2 it1: nozzle (82.14,209.17) err px (-1.5,+0.9)
+  P1-B2 it2: nozzle (81.83,208.98) err px (-0.5,-0.1)
+  -> P1-B2 at X81.83 Y208.98
+P1-B1: nominal bed (np.float64(70.0), np.float64(174.0)), nozzle guess (np.float64(69.83), np.float64(208.98))
+  P1-B1 it0: nozzle (69.83,208.98) err px (-0.0,+0.4)
+  -> P1-B1 at X69.83 Y208.98
+P1-A1: nominal bed (np.float64(70.0), np.float64(186.0)), nozzle guess (np.float64(69.83), np.float64(220.98))
+  P1-A1 it0: nozzle (69.83,220.98) err px (-0.5,+0.4)
+  -> P1-A1 at X69.83 Y220.98
+P1-A2: nominal bed (np.float64(82.0), np.float64(186.0)), nozzle guess (np.float64(81.83), np.float64(220.98))
+  P1-A2 it0: nozzle (81.83,220.98) err px (-0.5,+0.4)
+  -> P1-A2 at X81.83 Y220.98
