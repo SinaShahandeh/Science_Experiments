@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- mhapi-heatguard (safety spec H5): switches the bed heater off if mhapi-service dies while heating.
+     Install:   cp mhapi/launchd/local.mhapi.heatguard.plist ~/Library/LaunchAgents/
+                launchctl load ~/Library/LaunchAgents/local.mhapi.heatguard.plist
+     Remove:    launchctl unload ~/Library/LaunchAgents/local.mhapi.heatguard.plist -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>local.mhapi.heatguard</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/sina/Documents/Science_Experiments/bin/mhapi-heatguard</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/Users/sina/Documents/Science_Experiments/sessions/heatguard.log</string>
+  <key>StandardErrorPath</key><string>/Users/sina/Documents/Science_Experiments/sessions/heatguard.log</string>
+</dict>
+</plist>
