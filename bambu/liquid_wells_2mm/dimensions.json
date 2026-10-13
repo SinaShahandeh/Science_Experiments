@@ -1,0 +1,26 @@
+{
+  "islands": 5,
+  "cells_per_island": [
+    2,
+    2
+  ],
+  "island_dimensions_mm": [
+    26,
+    26,
+    12
+  ],
+  "internal_cell_dimensions_mm": [
+    10,
+    10,
+    10
+  ],
+  "wall_mm": 2,
+  "floor_mm": 2,
+  "capacity_to_brim_ml_per_cell": 1,
+  "slicer_estimated_seconds": 6047,
+  "slicer_filament_g": 24.56,
+  "material": "Generic PETG",
+  "intended_ams_slot": 4,
+  "physical_leak_test": "not performed",
+  "print_started": false
+}

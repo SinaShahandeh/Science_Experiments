@@ -9,6 +9,7 @@ import cv2
 from motion import Gantry, load_pos
 from pi_frame import pi_frame
 from wells import detect
+from cam_tilt import tilt_of_file
 
 CAL = "../calibration"
 Z = 50.0
@@ -17,8 +18,9 @@ J = np.array(json.load(open(f"{CAL}/jacobian_z{int(Z)}.json"))["J"])
 # Target pixel = nadir (point straight below the camera, from nadir.py), not the image centre:
 # the camera is tilted ~10 deg, so centring in the frame would put it ~21 mm off vertical.
 try:  # nadir.py imports holes() from here before nadir.json exists
-    _N = json.load(open(f"{CAL}/nadir.json"))
-    C = np.mean([_N[k]["nadir_px"] for k in ("58", "62", "66", "70")], axis=0)
+    import wellmap
+    C = wellmap.nadir()
+    open(f"{CAL}/nadir.json").close()
 except FileNotFoundError:
     C = np.array([640.0, 360.0])
 # bed point under the camera minus nozzle XY: image-centre estimate from P4, moved to the nadir
@@ -69,11 +71,12 @@ def center_on(g, label, nozzle_guess, pitch_px):
         h = holes(f)
         if len(h) == 0:
             raise RuntimeError(f"{label}: no holes detected")
-        d = np.linalg.norm(h - target_px, axis=1)
+        d = np.linalg.norm(h - target_px, axis=1)  # (identity check only; tilt is < 1 px)
         j = int(np.argmin(d))
         if d[j] > 0.45 * pitch_px:
             raise RuntimeError(f"{label}: nearest hole {d[j]:.0f}px from prediction (pitch {pitch_px:.0f}px)")
-        err = h[j] - C
+        Ct = C + tilt_of_file(f)  # nadir in this frame: reference nadir + camera tilt since the reference
+        err = h[j] - Ct
         pos = load_pos()
         print(f"  {label} it{it}: nozzle ({pos['x']:.2f},{pos['y']:.2f}) err px ({err[0]:+.1f},{err[1]:+.1f})")
         if np.linalg.norm(err) < TOL_PX:
@@ -83,7 +86,7 @@ def center_on(g, label, nozzle_guess, pitch_px):
             cv2.circle(img, (int(h[j][0]), int(h[j][1])), 5, (0, 255, 0), -1)
             cv2.putText(img, label, (int(h[j][0]) + 8, int(h[j][1]) - 8), 0, 0.8, (0, 255, 255), 2)
             cv2.imwrite(f"{CAL}/centered/{label}.jpg", img)
-            return np.array([pos["x"], pos["y"]]), err
+            return np.array([pos["x"], pos["y"]]), err, Ct - C
         # the hole should move by -err: J @ d = -err
         d_mm = np.linalg.solve(J, -err)
         g.move(x=round(pos["x"] + d_mm[0], 2), y=round(pos["y"] + d_mm[1], 2))
@@ -121,10 +124,11 @@ def main():
             off = island_off.get(isl, cam_off)
             guess = (nom - off).round(2)
             print(f"{label}: nominal bed {tuple(nom)}, nozzle guess {tuple(guess)}")
-            xy, err = center_on(g, label, guess, pitch_px)
+            xy, err, tilt = center_on(g, label, guess, pitch_px)
             island_off[isl] = nom - xy
             results[label] = {"xy": [round(float(xy[0]), 2), round(float(xy[1]), 2)], "z": Z,
-                              "residual_px": [round(float(err[0]), 2), round(float(err[1]), 2)]}
+                              "residual_px": [round(float(err[0]), 2), round(float(err[1]), 2)],
+                              "tilt_px": [round(float(tilt[0]), 2), round(float(tilt[1]), 2)]}
             json.dump(results, open(out_path, "w"), indent=1)
             print(f"  -> {label} at X{xy[0]:.2f} Y{xy[1]:.2f}")
     finally:

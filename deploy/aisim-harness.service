@@ -1,0 +1,30 @@
+[Unit]
+Description=Agent harness and dashboard, public mode (python -m harness --public)
+After=network-online.target aisim-twin.service
+Wants=network-online.target aisim-twin.service
+
+[Service]
+User=aisim
+Group=aisim
+WorkingDirectory=/opt/aisim/app
+Environment=PYTHONUNBUFFERED=1
+# limits (AISIM_*); the API key lives in secrets.env, readable by root only (deploy/gcp.sh key)
+EnvironmentFile=/etc/aisim/aisim.env
+EnvironmentFile=-/etc/aisim/secrets.env
+# the harness asks the twin whether it is one when it starts
+ExecStartPre=/bin/sh -c 'for i in $(seq 60); do curl -sf -o /dev/null http://127.0.0.1:8743/sim/clock && exit 0; sleep 1; done; exit 1'
+ExecStart=/opt/aisim/venv/bin/python -m harness --host 127.0.0.1 --port 8750 --rig http://127.0.0.1:8743 --public
+Restart=always
+RestartSec=2
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/opt/aisim/app/harness_runs
+# the agent's analysis code runs as a child of this service (bubblewrap); keep it from starving the twin
+MemoryMax=1400M
+OOMPolicy=continue
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target

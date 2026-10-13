@@ -1,0 +1,59 @@
+{
+    "error_string": "Failed exporting 3mf files.",
+    "export_time": 0,
+    "layer_height": 0.20000000298023224,
+    "plate_index": 0,
+    "prepare_time": 7,
+    "return_code": -13,
+    "sliced_plates": [
+        {
+            "feature_type_times": {
+                "Custom": 34.2966194152832,
+                "Gap infill": 3705.57275390625,
+                "Inner wall": 10042.0927734375,
+                "Outer wall": 5102.91796875,
+                "Top surface": 557.5391845703125,
+                "Travel": 2418.015625,
+                "Undefined": 2402.83740234375
+            },
+            "filament_change_times": 0,
+            "filaments": [
+                {
+                    "filament_id": "GFG99",
+                    "id": 1,
+                    "main_used_g": 148.54351806640625,
+                    "total_used_g": 148.54351806640625
+                }
+            ],
+            "generate_support_material_time": 63,
+            "id": 1,
+            "infill_time": 608,
+            "layer_filament_change": 0,
+            "main_predication": 21844.986328125,
+            "make_perimeters_time": 414,
+            "obj_cached_cnt": 0,
+            "objects": [
+                {
+                    "bbox": {
+                        "depth": 153.0,
+                        "height": 10.0,
+                        "width": 153.0,
+                        "x": 51.5,
+                        "y": 51.5000114440918,
+                        "z": 0.0
+                    },
+                    "id": 5,
+                    "name": "grid_15x15.stl",
+                    "triangle_count": 6250
+                }
+            ],
+            "sliced_time": 4446,
+            "sliced_time_with_cache": 3063,
+            "total_predication": 21864.07421875,
+            "triangle_count": 6250,
+            "warning_message": ""
+        }
+    ],
+    "sparse_infill_density": 15.0,
+    "wall_loops": 3
+}

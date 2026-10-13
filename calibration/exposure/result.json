@@ -4,7 +4,7 @@
     "gain": 1.5575587922110308,
     "red": 1.5524295302795694,
     "blue": 1.4451876342637504,
-    "brightness": 0.0617021276595745,
+    "brightness": 0.0777,
     "contrast": 1.1914893617021278
   },
   "measure": {
@@ -22,5 +22,6 @@
     "bed_max_p95": 151.5999999999999,
     "paper_px": 1070,
     "bed_px": 895
-  }
+  },
+  "note_20261012": "brightness +0.016 after camera/light remount so the bare bed's darkest channel is ~8; white point not re-measured (no paper in C-A1)"
 }

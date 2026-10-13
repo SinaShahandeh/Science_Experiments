@@ -1,0 +1,75 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "twin",
+      "runtimeExecutable": ".venv-harness/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "twin",
+        "--speed",
+        "10"
+      ],
+      "port": 8743
+    },
+    {
+      "name": "dashboard",
+      "runtimeExecutable": ".venv-harness/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "harness",
+        "--rig",
+        "http://127.0.0.1:8743"
+      ],
+      "port": 8750
+    },
+    {
+      "name": "mhapi-service",
+      "runtimeExecutable": "bin/mhapi-service",
+      "runtimeArgs": [
+        "--quiet"
+      ],
+      "port": 8742
+    },
+    {
+      "name": "dashboard-rig",
+      "runtimeExecutable": ".venv-harness/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "harness",
+        "--rig",
+        "http://127.0.0.1:8742",
+        "--port",
+        "8751"
+      ],
+      "port": 8751
+    },
+    {
+      "name": "twin-test",
+      "runtimeExecutable": ".venv-harness/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "twin",
+        "--port",
+        "8763",
+        "--speed",
+        "20",
+        "--manual-operator"
+      ],
+      "port": 8763
+    },
+    {
+      "name": "dashboard-test",
+      "runtimeExecutable": ".venv-harness/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "harness",
+        "--rig",
+        "http://127.0.0.1:8763",
+        "--port",
+        "8761"
+      ],
+      "port": 8761
+    }
+  ]
+}

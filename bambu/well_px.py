@@ -5,7 +5,8 @@ import numpy as np
 
 CAL = Path(__file__).resolve().parent.parent / "calibration"
 J = np.array(json.loads((CAL / "jacobian_z50.json").read_text())["J"])  # px per mm (cols: dX, dY)
-NADIR = np.array([743.0, 350.0])
+import wellmap
+NADIR = wellmap.nadir()  # reference camera pose; add cam_tilt shift for later frames
 
 
 def well_px(cam_xy, well_xy):
