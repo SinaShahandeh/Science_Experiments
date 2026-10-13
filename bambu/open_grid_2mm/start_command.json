@@ -1,0 +1,25 @@
+{
+  "print": {
+    "sequence_id": "1791730443",
+    "command": "project_file",
+    "param": "Metadata/plate_1.gcode",
+    "project_id": "0",
+    "profile_id": "0",
+    "task_id": "0",
+    "subtask_id": "0",
+    "subtask_name": "open_grid_2mm",
+    "url": "ftp:///open_grid_2mm.gcode.3mf",
+    "md5": "",
+    "bed_type": "auto",
+    "use_ams": true,
+    "ams_mapping": [
+      3
+    ],
+    "timelapse": false,
+    "bed_levelling": true,
+    "bed_leveling": true,
+    "flow_cali": true,
+    "vibration_cali": true,
+    "layer_inspect": false
+  }
+}

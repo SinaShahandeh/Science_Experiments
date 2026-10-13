@@ -1,0 +1,48 @@
+# Safety parameters of mhapi-service (Hardware_Safety_spec.md, "Parameters").
+# For people only: the agent and its harness must not be able to write this file.
+# The service reads it at start-up; restart the service after changing it.
+
+[heat]
+max_target_c = 100.0          # H1: targets above this are refused (temperature_limit)
+hard_max_c = 105.0            # H2: any reading above this halts
+overshoot_margin_c = 5.0      # H2: once at target, more than this above it ...
+overshoot_time_s = 60.0       # ... for longer than this halts
+stuck_rise_c = 3.0            # H2: with the heater off, a rise of more than this ...
+stuck_window_s = 60.0         # ... within this window halts (heater stuck on), judged only after
+stuck_grace_s = 30.0          # this long since the heater went off: the reading lags (switched off mid-ramp
+                              # it still climbs 5-7 °C over ~10 s; 2026-10-11 trial refit)
+lost_reports_s = 120.0        # H6: no status report for this long while heating halts
+heater_watchdog_s = 900.0     # H4: heater off after 15 min without any API call
+target_resend_s = 5.0         # H3: resend an unconfirmed target this often
+target_alert_s = 60.0         # H3: alert a person if a target is unconfirmed this long
+heartbeat_s = 5.0             # H5: heartbeat file period
+heatguard_stale_s = 120.0     # H5: mhapi-heatguard acts when the heartbeat is older than this
+
+[people]
+max_bed_load_c = 60.0         # P3: load_well refuses above this (bed_hot)
+max_bed_clean_c = 40.0        # P3: clean_all_wells refuses above this (bed_hot)
+operator_timeout_s = 900.0    # operator_timeout after 15 min without Done or Problem
+
+[motion]
+xy_feed = 1800                # M2: mm/min (30 mm/s), approved 2026-10-12
+z_feed = 300                  # M2: mm/min (5 mm/s)
+accel = 500                   # M2: mm/s^2, `M204 S500` before every move
+capture_z = 50.0              # M2: every capture is at Z50
+park_xy = [128.0, 254.0]      # M4: bare steel behind the grid, where Z is homed
+min_z_before_homing = 30.0    # M4: lift 30 mm first if the nozzle may be lower than this
+homing_lift_mm = 30.0         # M4
+post_xy_home_lift_mm = 10.0   # M4 step 2: relative lift after `G28 X`
+position_check_max_mm = 0.5   # prepare / clean_all_wells: a well further off sets position_warning
+
+[camera]
+warn_mm = 0.4                 # C2: position_warning above this camera shift
+stop_mm = 1.0                 # C2: camera_moved above this shift ...
+jump_mm = 0.4                 # ... or a jump of more than this between captures ...
+min_match = 0.3               # ... or a toolhead match quality below this (good frames: 0.69-1.05)
+
+[printer]
+serial = "03919D532700850"
+ip_hint = "192.168.4.54"      # rediscovered by serial number when unreachable (N1)
+firmware = "01.08.01.00"      # N4: refuse to run on any other version
+report_max_age_s = 15.0       # printer_ok needs a report this recent
+pushall_s = 5.0               # request a full status report this often
