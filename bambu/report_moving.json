@@ -1,0 +1,64 @@
+[
+ {
+  "print": {
+   "sequence_id": "2",
+   "command": "gcode_line",
+   "param": "G90\nG1 X60 Y60 Z40 F3000\nG1 X200 Y200 F3000\nG1 X128 Y128 Z30 F3000\n",
+   "reason": "success",
+   "result": "success"
+  }
+ },
+ {
+  "print": {
+   "bed_temper": 26.59375,
+   "wifi_signal": "-50dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "87"
+  }
+ },
+ {
+  "print": {
+   "bed_temper": 26.625,
+   "wifi_signal": "-49dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "88"
+  }
+ },
+ {
+  "print": {
+   "wifi_signal": "-46dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "89"
+  }
+ },
+ {
+  "print": {
+   "bed_temper": 26.59375,
+   "wifi_signal": "-51dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "90"
+  }
+ },
+ {
+  "print": {
+   "bed_temper": 26.625,
+   "wifi_signal": "-49dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "91"
+  }
+ },
+ {
+  "print": {
+   "bed_temper": 26.59375,
+   "wifi_signal": "-50dBm",
+   "command": "push_status",
+   "msg": 1,
+   "sequence_id": "92"
+  }
+ }
+]
