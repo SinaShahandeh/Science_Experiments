@@ -24,7 +24,9 @@ import numpy as np
 from PIL import Image
 
 STREAM = 'http://raspberrypi.local:8080/stream.mjpg'
-ROI = (712, 329, 757, 375)  # x0, y0, x1, y1: inside the C-A1 walls, 1280x720 frame
+import wellmap  # noqa: E402
+_N = wellmap.nadir()
+ROI = (int(_N[0]) - 22, int(_N[1]) - 22, int(_N[0]) + 23, int(_N[1]) + 23)  # inside the C-A1 walls (camera over C-A1, Z50)
 DROPIN = '/etc/systemd/system/mjpeg-stream.service.d/fixed-exposure.conf'
 SERVER = '/home/alwerds/Documents/Albert/Robot/mjpeg_server.py'
 TUNING = '/home/alwerds/Documents/Albert/Robot/ov5647_fixed_tone.json'

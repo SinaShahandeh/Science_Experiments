@@ -15,11 +15,9 @@ from pathlib import Path
 from bambu_link import Printer
 from camstream import CamStream
 from motion import load_pos, save_pos, ACCEL, SLOW_Z
+import wellmap
 
-WELLS = {  # from Model_Hardware_API_spec.md (camera nadir over well, Z50)
-    "P3-A1": (177.62, 115.17), "P3-A2": (189.62, 115.17),
-    "P3-B1": (177.62, 103.17), "P3-B2": (189.62, 103.17),
-}
+WELLS = wellmap.wells()  # calibration/well_positions_fit.json (camera straight above each well, Z50)
 FAST_XY = 1800  # 30 mm/s = 3x motion.SLOW_XY
 Z_IMG = 50.0
 PARK_X = 60.0   # toolhead far left while the operator loads P3
@@ -194,7 +192,7 @@ if __name__ == "__main__":
     ap.add_argument("out")
     ap.add_argument("--pre", type=float, default=50)
     ap.add_argument("--hold", type=float, default=75)
-    ap.add_argument("--wells", default="P3-A1,P3-A2,P3-B2,P3-B1")
+    ap.add_argument("--wells", default="P3-A1,P3-A2,P3-B2,P3-B1")  # any labels from the table
     ap.add_argument("--quiet", action="store_true", help="no beep (dry runs)")
     ap.add_argument("--leave-heat", action="store_true", help="don't switch the bed off at the end")
     a = ap.parse_args()
