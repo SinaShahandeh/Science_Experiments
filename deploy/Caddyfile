@@ -1,0 +1,17 @@
+# Public front of the simulation. deploy/setup_vm.sh writes it to /etc/caddy/Caddyfile, filling in the
+# hostname (an sslip.io name for the VM's address, so Let's Encrypt can issue a certificate) and the address.
+# With TLS=off the site is served over plain HTTP only.
+
+(site) {
+	reverse_proxy 127.0.0.1:8750 {
+		flush_interval -1
+	}
+	request_body {
+		max_size 2MB
+	}
+	header -Server
+}
+
+__SITES__ {
+	import site
+}
