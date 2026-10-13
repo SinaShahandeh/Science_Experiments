@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protein Aggregation Experiments</title>
+<link rel="stylesheet" href="/dashboard/style.css">
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header class="top">
+  <h1>Protein Aggregation Experiments</h1>
+  <div class="chips" id="chips">
+    <span class="chip" id="chip-rig" title="Instrument the harness talks to">rig …</span>
+    <span class="chip" id="chip-state" title="Homed / safety state">…</span>
+    <span class="chip" id="chip-bed" title="Bed reading → target">bed …</span>
+    <span class="chip" id="chip-clock" title="Instrument clock and simulation speed">…</span>
+    <span class="chip" id="chip-agent" title="Agent run">agent idle</span>
+    <span class="chip" id="chip-cost" title="Tokens and estimated cost of this run">$0.00</span>
+  </div>
+  <button class="icon-btn" id="sound" title="Sound alerts: a chime and a spoken line when a person is needed">🔔</button>
+  <button class="icon-btn" id="theme" title="Switch light/dark">◐</button>
+</header>
+
+<section class="operator" id="operator" hidden>
+  <div class="op-text"><span class="op-label">Operator</span> <span id="op-text"></span> <span class="op-auto" id="op-auto"></span></div>
+  <div class="op-actions">
+    <button class="btn ok" id="op-done">Done</button>
+    <button class="btn" id="op-problem">Problem…</button>
+    <button class="btn danger" id="op-stop">Stop rig</button>
+  </div>
+</section>
+
+<section class="operator halt" id="halt" role="alert" hidden>
+  <div class="op-text"><span class="op-label" id="halt-label">Safety stop</span> <span id="halt-text"></span>
+    <div class="op-sub" id="halt-sub"></div></div>
+  <div class="op-actions"><a class="btn" id="halt-console" target="_blank" rel="noopener">Operator console</a></div>
+</section>
+
+<section class="operator help" id="help" hidden>
+  <div class="op-text"><span class="op-label">The agent needs you</span> <span id="help-text"></span> <span class="op-auto" id="help-meta"></span></div>
+  <div class="op-actions">
+    <input id="help-note" placeholder="Note for the agent (optional)">
+    <button class="btn ok" id="help-done" title="You did what it asked">Done</button>
+    <button class="btn" id="help-problem" title="You couldn't; say why in the note">Can't fix</button>
+  </div>
+</section>
+
+<main class="grid">
+  <section class="card cam" aria-label="Printer camera">
+    <div class="card-head">
+      <h2>Printer camera</h2>
+      <span class="sub" id="view3d-sub">3D twin · drag to look around, scroll to zoom</span>
+      <div class="spacer"></div>
+      <button class="btn small" id="view-reset">Reset view</button>
+    </div>
+    <div class="viewport" id="view3d">
+      <div class="hud" id="hud"></div>
+      <div class="pin" id="pin" hidden></div>
+    </div>
+  </section>
+
+  <section class="card cam" aria-label="Nozzle camera">
+    <div class="card-head">
+      <h2>Nozzle camera</h2>
+      <span class="sub" id="viewpi-sub">Pi OV5647 · 1280×720 fisheye · simulated</span>
+      <div class="spacer"></div>
+      <label class="toggle"><input type="checkbox" id="nadir-mark"> nadir</label>
+    </div>
+    <div class="viewport pi" id="viewpi">
+      <div class="pi-tag" id="pi-tag"></div>
+      <div class="flash" id="flash"></div>
+    </div>
+  </section>
+
+  <section class="card wide" aria-label="Graph of the data coming from the wells">
+    <div class="card-head">
+      <h2>Data from the wells</h2>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="live" role="tab">Live data</button>
+        <button class="tab" data-tab="figs" role="tab">Agent figures <span id="fig-count"></span></button>
+      </div>
+      <div class="spacer"></div>
+      <div class="legend" id="legend"></div>
+      <label class="toggle sim-only" title="Overlay the twin's true brightness (simulation only)"><input type="checkbox" id="truth"> true curves</label>
+    </div>
+    <div class="tab-body" id="tab-live">
+      <div class="chart-title">Well brightness <span class="muted">gray level, 0–255 (median of the measured 7 × 7 mm square)</span></div>
+      <div class="chart" id="chart-wells"></div>
+      <div class="chart-title">Bed temperature <span class="muted">°C · reading and target</span></div>
+      <div class="chart short" id="chart-bed"></div>
+      <div class="tooltip" id="tooltip" hidden></div>
+    </div>
+    <div class="tab-body" id="tab-figs" hidden>
+      <div class="truth" id="truth-box" hidden></div>
+      <div class="figs" id="figs"><p class="muted">Figures the agent saves with its python tool appear here.</p></div>
+    </div>
+  </section>
+
+  <section class="card wide steps-card" aria-label="Agent steps">
+    <div class="card-head">
+      <h2>Agent steps</h2>
+      <span class="sub" id="run-sub">claude-opus-5-5</span>
+      <div class="spacer"></div>
+      <select id="run-pick" title="Watch the live run or replay a recorded one"><option value="live">Live</option></select>
+    </div>
+    <div class="composer" id="composer">
+      <div class="row">
+        <select id="scenario" title="Example prompts"></select>
+        <select id="effort" title="Effort (how much the model thinks per turn)">
+          <option value="low">effort: low</option><option value="medium" selected>effort: medium</option><option value="high">effort: high</option>
+        </select>
+        <label class="toggle"><input type="checkbox" id="protocol" checked> attach protocol</label>
+        <div class="spacer"></div>
+        <label class="sim-only">speed
+          <select id="speed"><option>1</option><option>2</option><option>5</option><option selected>10</option><option>20</option></select>×
+        </label>
+        <label class="toggle sim-only"><input type="checkbox" id="auto-op" checked> simulated operator</label>
+        <label class="toggle sim-only" title="Start the run on a fresh twin: empty wells, cold bed, printer not homed"><input type="checkbox" id="fresh" checked> fresh rig</label>
+        <select id="fault" class="sim-only" title="Inject a fault into the twin">
+          <option value="">inject fault…</option>
+          <option value="bubble">bubble in a well</option>
+          <option value="room_light">room light on/off</option>
+          <option value="camera_bump">camera bumped (0.6 mm)</option>
+          <option value="island_shift">island P3 shifted 0.6 mm</option>
+          <option value="lose_home">printer loses home</option>
+          <option value="printer_offline">printer offline 60 s</option>
+        </select>
+      </div>
+      <textarea id="prompt" rows="4" placeholder="What should the agent do?"></textarea>
+      <div class="row">
+        <button class="btn primary" id="start">Start run</button>
+        <button class="btn" id="stop-agent" disabled>Stop agent</button>
+        <input id="msg" placeholder="Message the agent (delivered after its current step)" disabled>
+        <button class="btn" id="send" disabled>Send</button>
+      </div>
+      <div class="notice" id="notice" role="status" hidden></div>
+      <p class="public-note" id="public-note" hidden></p>
+    </div>
+    <ol class="feed" id="feed"></ol>
+  </section>
+</main>
+
+<div class="lightbox" id="lightbox" hidden><img id="lightbox-img" alt=""></div>
+
+<script type="module" src="/dashboard/app.js"></script>
+</body>
+</html>
