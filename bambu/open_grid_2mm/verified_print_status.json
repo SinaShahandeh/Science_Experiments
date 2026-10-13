@@ -1,0 +1,15 @@
+{
+  "gcode_state": "RUNNING",
+  "subtask_name": "open_grid_2mm",
+  "mc_remaining_time": 67,
+  "mc_percent": 0,
+  "layer_num": 0,
+  "stg_cur": 2,
+  "print_error": 0,
+  "hms": [],
+  "nozzle_temper": 83.71875,
+  "nozzle_target_temper": 140,
+  "bed_temper": 79.53125,
+  "bed_target_temper": 80,
+  "ams_tray_now": "3"
+}
