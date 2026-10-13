@@ -1,0 +1,66 @@
+% Figure 2: the hierarchy of a scientific experiment, drawn as a sliced pyramid.
+% Included by design_rationale.tex with \input{fig_hierarchy}.
+\definecolor{pyrInk}{HTML}{1D2B45}
+\definecolor{pyrTop}{HTML}{1D3557}
+\definecolor{pyrBot}{HTML}{BCD3E6}
+\definecolor{pyrGround}{HTML}{E8D9AE}
+\definecolor{pyrGroundInk}{HTML}{4A3B14}
+\definecolor{pyrCmd}{HTML}{D1603D}
+\definecolor{pyrObs}{HTML}{23897D}
+\begin{tikzpicture}[
+    x=1cm, y=1cm,
+    cmd/.style={-{Stealth[length=2.8mm,width=2.5mm]}, line width=1.5pt, draw=pyrCmd},
+    obs/.style={-{Stealth[length=2.8mm,width=2.5mm]}, line width=1.5pt, draw=pyrObs},
+    actor/.style={draw=pyrInk!40, line width=0.6pt, fill=white, rounded corners=8pt,
+                  inner xsep=8pt, inner ysep=4pt, font=\sffamily\small\bfseries, text=pyrInk},
+    cmdlab/.style={anchor=east, font=\sffamily\footnotesize\itshape, text=pyrCmd},
+    obslab/.style={anchor=west, font=\sffamily\footnotesize\itshape, text=pyrObs},
+    layer/.style={font=\sffamily\small\bfseries, align=center},
+  ]
+  \def\a{1.6}   % half-width of the pyramid's top edge
+  \def\k{0.46}  % half-width added per cm of depth
+  % \slice{top depth}{bottom depth}{fill}{text colour}{label}
+  \def\slice#1#2#3#4#5{%
+    \pgfmathsetmacro\wt{\a+\k*#1}%
+    \pgfmathsetmacro\wb{\a+\k*#2}%
+    \fill[#3] (-\wt,-#1) -- (\wt,-#1) -- (\wb,-#2) -- (-\wb,-#2) -- cycle;
+    \node[layer, text=#4] at (0,{-(#1+#2)/2}) {#5};}
+  % \iface{top depth}{bottom depth}{component}{passed down}{passed up}
+  \def\iface#1#2#3#4#5{%
+    \pgfmathsetmacro\ax{0.62*(\a+\k*(#1+#2)/2)}%
+    \pgfmathsetmacro\ym{-(#1+#2)/2}%
+    \draw[cmd] (-\ax,{-#1-0.08}) -- (-\ax,{-#2+0.08});
+    \draw[obs] (\ax,{-#2+0.08}) -- (\ax,{-#1-0.08});
+    \node[cmdlab] at ({-\ax-0.2},\ym) {#4};
+    \node[obslab] at ({\ax+0.2},\ym) {#5};
+    \node[actor] at (0,\ym) {#3};}
+
+  % Layers, from the top of the pyramid down
+  \slice{0}{0.95}{pyrTop}{white}{Understanding}
+  \slice{1.17}{2.12}{pyrTop!80!pyrBot}{white}{Scientific hypothesis}
+  \slice{3.37}{4.32}{pyrTop!60!pyrBot}{white}{Experiment protocol design}
+  \slice{5.57}{6.52}{pyrTop!38!pyrBot}{white}{Collection of experimental sub-tasks}
+  \slice{7.77}{8.92}{pyrTop!14!pyrBot}{pyrInk}{Robot hardware control\\[-1pt]
+    {\footnotesize\mdseries to run each individual task}}
+  \slice{10.17}{11.12}{pyrGround}{pyrGroundInk}{The physical system under study}
+
+  % Interfaces between neighboring layers
+  \pgfmathsetmacro\ax{0.62*(\a+\k*(2.12+3.37)/2)}
+  \draw[cmd] (-\ax,-2.20) -- (-\ax,-3.29);
+  \draw[obs] (\ax,-3.29) -- (\ax,-2.20);
+  \node[cmdlab] at ({-\ax-0.2},-2.745) {abstract tasks};
+  \node[obslab] at ({\ax+0.2},-2.745) {observations};
+  \iface{4.32}{5.57}{Experimental Agent}{tasks}{experimental results}
+  \iface{6.52}{7.77}{Model--Hardware API (M-HAPI)}{abstract actions}{science metrics}
+  \iface{8.92}{10.17}{Firmware}{actuation}{environment sensing}
+
+  % Legend
+  \begin{scope}[shift={(0,-11.85)}]
+    \draw[cmd] (-4.9,0.2) -- (-4.9,-0.2);
+    \node[anchor=west, font=\sffamily\footnotesize, text=pyrInk] at (-4.7,0)
+      {passed down to the layer below};
+    \draw[obs] (0.7,-0.2) -- (0.7,0.2);
+    \node[anchor=west, font=\sffamily\footnotesize, text=pyrInk] at (0.9,0)
+      {passed up to the layer above};
+  \end{scope}
+\end{tikzpicture}

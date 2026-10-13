@@ -22,4 +22,15 @@ Scientific_Agent_Harness_*.md
 reports/
 research_notes/
 exa-results/
-*.pdf
+
+# Secrets
+.env
+
+# Run outputs: service sessions, digital-twin sessions, harness runs
+sessions/
+sim_sessions/
+harness_runs/
+
+# mhapi-service session folders (calls, temperatures, frames, cell images); the simulator's are separate
+sessions/
+sessions_sim/
