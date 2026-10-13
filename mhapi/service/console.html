@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MHAPI Operator Console</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --panel: #ffffff; --text: #1d2228; --muted: #5d6874; --line: #dde1e6;
+    --done: #1f7a3d; --problem: #9a6400; --stop: #b3261e; --ok: #1f7a3d; --warn: #9a6400; --bad: #b3261e;
+    --prompt-bg: #fff7d6; --prompt-line: #e9c64a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15181c; --panel: #1e2227; --text: #e8eaed; --muted: #9aa3ad; --line: #30363d;
+      --done: #3fb565; --problem: #e0a526; --stop: #ef5350; --ok: #3fb565; --warn: #e0a526; --bad: #ef5350;
+      --prompt-bg: #2e2a17; --prompt-line: #8a7425;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600;
+           border: 1px solid currentColor; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  #prompt { background: var(--prompt-bg); border-color: var(--prompt-line); }
+  #prompt-text { font-size: 30px; font-weight: 650; margin: 4px 0 10px; }
+  #prompt-live { color: var(--muted); margin-bottom: 14px; }
+  .idle { color: var(--muted); font-size: 18px; }
+  .buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+  button { font: inherit; font-weight: 650; border: 0; border-radius: 8px; padding: 12px 20px; cursor: pointer; color: #fff; }
+  button:disabled { opacity: .45; cursor: default; }
+  .done { background: var(--done); } .problem { background: var(--problem); } .stop { background: var(--stop); }
+  .clear { background: #3b5bdb; }
+  kbd { font-size: 12px; opacity: .85; margin-left: 6px; }
+  #note-row { display: none; margin-top: 12px; gap: 8px; }
+  #note { flex: 1; font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
+          background: var(--panel); color: var(--text); min-width: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px 18px; }
+  .k { color: var(--muted); font-size: 13px; }
+  .v { font-weight: 600; overflow-wrap: anywhere; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  #safety-banner { display: none; border-color: var(--bad); }
+  #safety-banner h2 { margin: 0 0 6px; color: var(--bad); font-size: 20px; }
+  ul { margin: 0; padding-left: 18px; }
+  #events li { font-size: 13px; margin: 2px 0; }
+  .ev-t { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+  #conn { font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>MHAPI operator console <span id="sim" class="badge warn" hidden>SIMULATOR</span></h1>
+    <div class="meta">session <span id="session">–</span> · calibration <span id="cal">–</span> · <span id="conn">connecting…</span></div>
+  </header>
+
+  <section id="safety-banner" class="panel">
+    <h2 id="safety-title">Safety stop</h2>
+    <div id="safety-detail"></div>
+    <p class="meta">Check the rig before clearing. Clearing does not restore the heater; the instrument re-homes on its next <code>prepare()</code>.</p>
+    <button class="clear" id="clear-btn">Clear</button>
+  </section>
+
+  <section id="prompt" class="panel">
+    <div id="prompt-text" class="idle">No request. Nothing for you to do.</div>
+    <div id="prompt-live"></div>
+    <div class="buttons">
+      <button class="done" id="done-btn" disabled>Done<kbd>Enter</kbd></button>
+      <button class="problem" id="problem-btn" disabled>Problem<kbd>X</kbd></button>
+      <button class="stop" id="stop-btn">Stop<kbd>Esc</kbd></button>
+    </div>
+    <div id="note-row">
+      <input id="note" placeholder="What is the problem? (optional, goes to the agent)" maxlength="300">
+      <button class="problem" id="send-problem">Send problem</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="grid">
+      <div><div class="k">Safety</div><div class="v" id="s-safety">–</div></div>
+      <div><div class="k">Bed</div><div class="v" id="s-bed">–</div></div>
+      <div><div class="k">Homed</div><div class="v" id="s-homed">–</div></div>
+      <div><div class="k">Printer</div><div class="v" id="s-printer">–</div></div>
+      <div><div class="k">Camera</div><div class="v" id="s-camera">–</div></div>
+      <div><div class="k">Operation</div><div class="v" id="s-op">–</div></div>
+      <div><div class="k">Loaded wells</div><div class="v" id="s-wells">–</div></div>
+      <div><div class="k">Position check</div><div class="v" id="s-check">–</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="k">Recent events</div>
+    <ul id="events"></ul>
+  </section>
+</main>
+<script>
+const TOKEN = "__CLEAR_TOKEN__";
+let state = null;
+const $ = (id) => document.getElementById(id);
+const fmtT = (t) => t ? new Date(t * 1000).toLocaleTimeString() : "–";
+const setText = (id, text, cls) => { const e = $(id); e.textContent = text; e.className = "v" + (cls ? " " + cls : ""); };
+
+async function post(path, body) {
+  try {
+    const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {})});
+    return await r.json();
+  } catch (e) { return {ok: false, message: String(e)}; }
+}
+
+function render(s) {
+  state = s;
+  $("sim").hidden = !s.sim;
+  $("session").textContent = s.session || "–";
+  $("cal").textContent = s.calibration_id || "–";
+  const p = s.prompt;
+  const prompting = !!p;
+  $("prompt-text").textContent = prompting ? p.text : "No request. Nothing for you to do.";
+  $("prompt-text").className = prompting ? "" : "idle";
+  $("prompt-live").textContent = prompting ? `Requested ${fmtT(p.t_requested)} · bed now ${s.bed_c ?? "–"} °C (target ${s.target_c ?? "–"} °C)` : "";
+  $("done-btn").disabled = !prompting;
+  $("problem-btn").disabled = !prompting;
+  if (!prompting) $("note-row").style.display = "none";
+
+  const st = s.safety.state;
+  setText("s-safety", st + (s.safety.reason ? ` (${s.safety.reason})` : ""), st === "ok" ? "ok" : st === "halted" ? "bad" : "warn");
+  $("safety-banner").style.display = s.clear_needed ? "block" : "none";
+  if (s.clear_needed) {
+    $("safety-title").textContent = st === "halted" ? "Safety stop: heater off, nothing moves" : "Camera moved: motion stopped";
+    const parts = [];
+    if (st === "halted") parts.push(`Reason: ${s.safety.reason} at ${fmtT(s.safety.t)}.`);
+    if (s.camera_lock) parts.push(`Camera: ${s.camera_lock.detail}. Check the mount and recalibrate before clearing.`);
+    $("safety-detail").textContent = parts.join(" ");
+  }
+  setText("s-bed", `${s.bed_c ?? "–"} °C → target ${s.target_c ?? "–"} °C` + (s.target_confirmed ? "" : " (unconfirmed)") + (s.power_assertion ? " · Mac kept awake" : ""),
+          (s.bed_c ?? 0) > 60 ? "warn" : "");
+  setText("s-homed", s.homed ? (s.position_unknown ? `yes, position unknown (${s.position_unknown})` : "yes") : "no", s.homed && !s.position_unknown ? "ok" : "warn");
+  setText("s-printer", s.printer_problems.length ? s.printer_problems.join("; ") : "ok", s.printer_problems.length ? "bad" : "ok");
+  setText("s-camera", s.camera_ok ? "streaming" : "no frames", s.camera_ok ? "ok" : "bad");
+  setText("s-op", s.operation ? `${s.operation.command} ${Object.values(s.operation.args || {}).join(" ")} (${s.operation.state})` + (s.queued ? ` · ${s.queued} queued` : "") : (s.queued ? `${s.queued} queued` : "idle"));
+  setText("s-wells", s.loaded_wells.length ? s.loaded_wells.map(w => w.label).join(", ") : "none");
+  const pc = s.position_check;
+  setText("s-check", pc ? `${pc.max_mm ?? "?"} mm max at ${fmtT(pc.t)}` + (pc.unmeasured ? ` · unmeasured ${pc.unmeasured.join(", ")}` : "") : "not run",
+          pc && (pc.max_mm === null || pc.max_mm > 0.5 || pc.unmeasured) ? "warn" : "");
+  $("events").innerHTML = "";
+  for (const e of s.events) {
+    const li = document.createElement("li");
+    const t = document.createElement("span"); t.className = "ev-t"; t.textContent = fmtT(e.t);
+    li.appendChild(t);
+    li.appendChild(document.createTextNode(`${e.event} ${JSON.stringify(e.detail)}`.slice(0, 220)));
+    $("events").appendChild(li);
+  }
+}
+
+async function poll() {
+  try {
+    const r = await fetch("/operator/state", {cache: "no-store"});
+    render(await r.json());
+    $("conn").textContent = "live";
+    $("conn").className = "ok";
+  } catch (e) {
+    $("conn").textContent = "service not reachable";
+    $("conn").className = "bad";
+  }
+}
+
+async function answer(kind) {
+  if (!state || !state.prompt) return;
+  const note = kind === "problem" ? $("note").value : null;
+  const r = await post("/operator/answer", {id: state.prompt.id, answer: kind, note});
+  $("note").value = "";
+  $("note-row").style.display = "none";
+  if (!r.ok) alert("That request is no longer open.");
+  poll();
+}
+
+function showProblem() {
+  if (!state || !state.prompt) return;
+  $("note-row").style.display = "flex";
+  $("note").focus();
+}
+
+async function stop() { await post("/operator/stop", {}); poll(); }
+
+async function clearHalt() {
+  if (!confirm("Have you checked the rig (and the camera mount, if it moved)? Clearing re-enables the instrument.")) return;
+  const r = await post("/operator/clear", {token: TOKEN});
+  if (!r.ok) alert(r.message || "Clear failed");
+  poll();
+}
+
+$("done-btn").onclick = () => answer("done");
+$("problem-btn").onclick = showProblem;
+$("send-problem").onclick = () => answer("problem");
+$("stop-btn").onclick = stop;
+$("clear-btn").onclick = clearHalt;
+$("note").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); answer("problem"); } });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { e.preventDefault(); stop(); return; }
+  if (document.activeElement === $("note")) return;
+  if (e.key === "Enter") { e.preventDefault(); answer("done"); }
+  else if (e.key === "x" || e.key === "X") { e.preventDefault(); showProblem(); }
+});
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>

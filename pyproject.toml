@@ -1,0 +1,21 @@
+[project]
+name = "mhapi"
+version = "0.1.0"
+description = "Model Hardware API: the mhapi CLI and mhapi-service for the Bambu A1 camera gantry and hot plate"
+requires-python = ">=3.11"
+dependencies = ["fastapi", "uvicorn", "numpy", "opencv-python", "paho-mqtt>=2"]
+
+[project.scripts]
+mhapi = "mhapi.cli:main"
+mhapi-service = "mhapi.service.main:main"
+mhapi-heatguard = "mhapi.heatguard:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mhapi*"]
+
+[tool.setuptools.package-data]
+mhapi = ["safety.toml", "service/console.html", "launchd/*.plist"]
