@@ -12,6 +12,7 @@ import numpy as np
 from motion import Gantry, load_pos
 from pi_frame import pi_frame
 from calibrate_wells import holes, C, J
+from cam_tilt import tilt_of_file
 
 CAL = "../calibration"
 ZLO, ZHI = 50.0, 100.0
@@ -41,8 +42,7 @@ def hole_at(path, guess, half=60):
             continue
         if a < 300 or min(w, h) / max(w, h) < 0.7:
             continue
-        cnts, _ = cv2.findContours((lab == i).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        (cx, cy), _, _ = cv2.minAreaRect(cnts[0])
+        cx, cy = cen[i]  # area centroid: sub-pixel
         d = np.hypot(cx - half, cy - half)
         if d < bd:
             best, bd = (np.array([cx + x0, cy + y0]), int(a)), d
@@ -88,12 +88,16 @@ try:
             print(f"{k}: target well not found (Z50 {p50}, Z100 {p100})", flush=True)
             out[k] = {"error": "not found"}
             continue
+        t50, t100 = tilt_of_file(f50), tilt_of_file(f100)
+        p50, p100 = p50 - t50, p100 - t100                      # into reference-camera coordinates
         d_par = np.linalg.solve(J, (p50 - p100) / (1 - s))      # well offset from vertical, mm
         d_nad = np.linalg.solve(J, p50 - C)
+        n_well = p50 - (p50 - p100) / (1 - s)                   # this well's own Z-invariant pixel
         out[k] = {"parallax_mm": d_par.round(3).tolist(), "parallax_abs_mm": round(float(np.linalg.norm(d_par)), 3),
                   "nadir_err_mm": d_nad.round(3).tolist(), "p50": p50.round(1).tolist(), "p100": p100.round(1).tolist(),
                   "scale": round(float(s), 4), "local_fixed_point_px": n_local.round(1).tolist(), "n_holes": len(pairs),
-                  "area_px": [a50, a100]}
+                  "area_px": [a50, a100], "well_fixed_point_px": n_well.round(2).tolist(),
+                  "tilt_px": [t50.round(2).tolist(), t100.round(2).tolist()]}
         print(f"{k}: parallax offset ({d_par[0]:+.2f},{d_par[1]:+.2f}) mm |{np.linalg.norm(d_par):.2f}|  "
               f"nadir err ({d_nad[0]:+.2f},{d_nad[1]:+.2f}) mm  hole px Z50 {p50.round(1)} Z100 {p100.round(1)}  "
               f"s={s:.3f} fixed pt {n_local.round(1)} n={len(pairs)}", flush=True)
@@ -103,4 +107,6 @@ finally:
 v = np.array([o["parallax_abs_mm"] for o in out.values() if "error" not in o])
 fp = np.array([o["local_fixed_point_px"] for o in out.values() if "error" not in o])
 fp = fp[~np.isnan(fp).any(1)]
+wf = np.array([o["well_fixed_point_px"] for o in out.values() if "error" not in o])
+print(f"Z-invariant pixel from the wells: mean {wf.mean(0).round(2)} sd {wf.std(0).round(2)} sem {(wf.std(0)/np.sqrt(len(wf))).round(2)}")
 print(f"parallax |offset| mm: median {np.median(v):.2f}, max {v.max():.2f};  fixed point px mean {fp.mean(0).round(1)} sd {fp.std(0).round(1)}")
