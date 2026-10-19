@@ -130,8 +130,8 @@ Discovery used mDNS resolution, TCP connection probes, and HTTP GET requests. No
 ## Update 2026-10-11: SSH access and fixed exposure
 
 - **Device:** Raspberry Pi 5 Model B, Debian 13 (trixie); camera module **OV5647** via Picamera2/libcamera.
-- **SSH:** `ssh raspberrypi` from this Mac (user `<pi-user>`, key `~/.ssh/raspberrypi`, entry in `~/.ssh/config`). `<pi-user>` has passwordless `sudo`.
-- **Server:** `/home/<pi-user>/<camera-dir>/mjpeg_server.py`, run by systemd unit `mjpeg-stream.service`. Not under git; original saved as `mjpeg_server.py.bak-20261011`.
+- **SSH:** `ssh raspberrypi` from this Mac (user and key in the `raspberrypi` entry of `~/.ssh/config`). The user has passwordless `sudo`.
+- **Server:** `mjpeg_server.py` in a folder under the user's home (`ssh raspberrypi systemctl cat mjpeg-stream.service` shows the path), run by systemd unit `mjpeg-stream.service`. Not under git; original saved as `mjpeg_server.py.bak-20261011`.
 - **Added flags:** `--exposure-us` (disables auto exposure), `--gain` (analogue gain), `--awb-gains red,blue` (disables auto white balance). Also fixed a SIGTERM deadlock that made `systemctl stop` hang for 90 s.
 - **Current locked values** live in drop-in `/etc/systemd/system/mjpeg-stream.service.d/fixed-exposure.conf`, written by `bambu/calibrate_exposure.py`. Since 2026-10-11 23:50 (v2): white paper in cell C-A1 → ~232 and the bare bed's darkest channel → ~8 (bed reads about RGB 30, 8, 35), so there is room above white and below black. Exposure 10 ms, analogue gain 1.56; the script only picks exposures that are whole multiples of 10 ms, so 100 Hz flicker from mains room lighting cannot beat against it. The camera must be parked so C-A1 sits on the nadir pixel. Result and frames: `calibration/exposure/`; the v1 result (paper → 255, bed → 0, 21.33 ms) is kept as `result_v1_paper255.json`. Delete the drop-in, `daemon-reload` and restart to return to auto.
 - **Lighting:** the toolhead LED bar is battery powered and steady (frame-to-frame SD ≈ 0.2 %). The room ceiling light adds a ±2 % brightness oscillation with a period of 2–3 s; keep it off during runs. Test data: `calibration/flicker/`.

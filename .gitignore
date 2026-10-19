@@ -55,3 +55,6 @@ calibration/tilt_log.csv
 # Superseded calibrations, kept locally only
 calibration/archive_*/
 calibration/recheck_*/
+
+# Stray PDFs at the top level (not part of the project)
+/*.pdf
