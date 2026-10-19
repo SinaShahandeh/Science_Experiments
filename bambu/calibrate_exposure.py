@@ -14,8 +14,10 @@ Each step rewrites the systemd drop-in on the Pi and restarts mjpeg-stream, so t
 values persist. Adaptive contrast enhancement is disabled via a tuning-file copy, otherwise
 the tone curve would follow the scene. Usage: python3 calibrate_exposure.py
 """
+import functools
 import json
 import pathlib
+import re
 import subprocess
 import time
 import urllib.request
@@ -28,17 +30,27 @@ import wellmap  # noqa: E402
 _N = wellmap.nadir()
 ROI = (int(_N[0]) - 22, int(_N[1]) - 22, int(_N[0]) + 23, int(_N[1]) + 23)  # inside the C-A1 walls (camera over C-A1, Z50)
 DROPIN = '/etc/systemd/system/mjpeg-stream.service.d/fixed-exposure.conf'
-SERVER = '/home/<pi-user>/<camera-dir>/mjpeg_server.py'
-TUNING = '/home/<pi-user>/<camera-dir>/ov5647_fixed_tone.json'
 EXPOSURES_US = (30000, 20000, 10000)  # flicker-safe: whole 10 ms periods, <= 33 ms at 30 fps
 WHITE, BLACK = 232, 8  # paper: mean of R,G,B medians; bare bed: its darkest channel (the bed is bluish)
 OUT = pathlib.Path(__file__).resolve().parent.parent / 'calibration' / 'exposure'
 
 
+@functools.cache
+def server_dir():
+    """Folder on the Pi holding mjpeg_server.py and the tuning copy, read from the stream's systemd unit."""
+    unit = subprocess.run(['ssh', 'raspberrypi', 'systemctl cat mjpeg-stream.service'],
+                          capture_output=True, text=True, check=True).stdout
+    m = re.search(r'(/\S+)/mjpeg_server\.py', unit)
+    if not m:
+        raise SystemExit('mjpeg_server.py not found in mjpeg-stream.service on the Pi')
+    return m.group(1)
+
+
 def apply(p):
     """Write the drop-in for params p and restart the stream service."""
+    server, tuning = f'{server_dir()}/mjpeg_server.py', f'{server_dir()}/ov5647_fixed_tone.json'
     exec_start = (
-        f'/usr/bin/python3 {SERVER} --width 1280 --height 720 --framerate 30 '
+        f'/usr/bin/python3 {server} --width 1280 --height 720 --framerate 30 '
         f'--quality medium --port 8080 --exposure-us {p["exposure"]} --gain {p["gain"]:.3f} '
         f'--awb-gains {p["red"]:.4f},{p["blue"]:.4f} '
         f'--brightness {p["brightness"]:.4f} --contrast {p["contrast"]:.4f}'
@@ -48,7 +60,7 @@ def apply(p):
         '# White paper in C-A1 -> 255, black bed -> 0. Delete this file, then\n'
         '# `sudo systemctl daemon-reload && sudo systemctl restart mjpeg-stream` for auto.\n'
         '[Service]\n'
-        f'Environment=LIBCAMERA_RPI_TUNING_FILE={TUNING}\n'
+        f'Environment=LIBCAMERA_RPI_TUNING_FILE={tuning}\n'
         'ExecStart=\n'
         f'ExecStart={exec_start}\n'
     )
