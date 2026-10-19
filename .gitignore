@@ -6,6 +6,7 @@ __pycache__/
 
 # Camera frames and run outputs (large, regenerable)
 *.jpg
+!docs/img/*.jpg
 tmp_runs/
 
 # Printer runtime state: last commanded position, rewritten on every move
